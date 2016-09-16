@@ -10,6 +10,7 @@ lookupOrFail mapping item  = case Map.lookup item mapping of
                                       Just x  -> x
                                       Nothing -> error ("Lookup of " ++ (show item) ++ " in " ++ (show mapping) ++ " failed!")
 
+
 data Operator = And
               | Or
               | Xor
