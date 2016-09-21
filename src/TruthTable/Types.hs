@@ -19,7 +19,8 @@ data Operator = And
 newtype Variable = Variable String
                    deriving (Eq, Ord, Show)
 
-data Statement = Negation Statement
+data Statement = NestedStatement Statement
+               | Negation Statement
                | VariableStatement Variable
                -- ^ a statement that just wraps a variable so we can negate
                -- variables without further work
@@ -27,6 +28,7 @@ data Statement = Negation Statement
                 deriving (Eq, Show)
 
 evaluateStatement :: Map.Map Variable Bool -> Statement -> Bool
+evaluateStatement vars (NestedStatement stmt) = evaluateStatement vars stmt
 evaluateStatement vars (Negation stmt) = not . evaluateStatement vars $ stmt
 evaluateStatement vars (VariableStatement thisVar) = lookupOrFail vars thisVar
 -- ^ if this statement just wraps a variable, just look up its value in the table
