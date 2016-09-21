@@ -1,4 +1,6 @@
-module TruthTable.Mapping where
+module TruthTable.Mapping 
+(binaryToMap)
+where
 
 import TruthTable.Types
 import qualified Data.Map.Strict as Map 
