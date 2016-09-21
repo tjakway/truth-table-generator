@@ -5,6 +5,7 @@ import qualified Data.Map.Strict as Map
 
 import Data.Char (intToDigit)
 import Numeric (showIntAtBase)
+import Data.List (nub)
 
 numIterations :: [Variable] -> Integer
 numIterations = (2 ^) . length 
@@ -18,5 +19,12 @@ binaryToBool 0 = False
 binaryToBool 1 = True
 binaryToBool x = error $ "non-binary value " ++ (show x) ++ " passed to binaryToBool!"
 
-binaryToMap :: [Variable] -> Int -> Map.Map Variable Bool
-binaryToMap vars = Map.fromList . zip vars . map (binaryToBool . read) . showAsBinary
+binaryToMap :: [Variable] -> [Map.Map Variable Bool]
+binaryToMap vars = map (Map.fromList . zip uniqVars . map (binaryToBool . read . return)) truthBinaryValues
+         -- ^ apply return before read because read expects [Char] not Char
+         -- even though we're only reading one character (which ought to be
+         -- a 0 or 1)
+    where uniqVars          = nub vars
+          numVars           = length uniqVars
+          truthBinaryValues = map showAsBinary (reverse [0..numVars])
+          -- ^ truth values from largest -> smallest
