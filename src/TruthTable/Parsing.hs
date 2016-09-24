@@ -22,17 +22,14 @@ countParentheses str = if numLeftParentheses == numRightParentheses
           numLeftParentheses = countChar '(' str
           numRightParentheses = countChar ')' str
 
-operatorSymbol :: Parser 
-operatorSymbol = oneOf . map (<|>) . mconcat $ [andOperatorStrings, orOperatorStrings, xorOperatorStrings]
+--generic enum parser
 
-genOperatorStrings :: String -> [String]
-genOperatorStrings str = [map toUpper str, str]
+--see http://stackoverflow.com/questions/25215184/compact-way-to-map-strings-to-datatype-using-parsec
+parseEnumValue :: (Show a) => a -> Parser a
+parseEnumValue val = string (map toUpper $ show val) >> return val
 
-andOperatorStrings :: [String]
-andOperatorStrings = genOperatorStrings "And"
+parseEnum :: (Show a, Enum a, Bounded a) => Parser a
+parseEnum = choice $ map parseEnumValue [minBound..maxBound]
 
-orOperatorStrings :: [String]
-orOperatorStrings = genOperatorStrings "Or"
-
-xorOperatorStrings :: [String]
-xorOperatorStrings = genOperatorStrings "Xor"
+parseOperator :: Parser Operator
+parseOperator = parseEnum

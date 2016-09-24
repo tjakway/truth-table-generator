@@ -14,7 +14,7 @@ lookupOrFail mapping item  = case Map.lookup item mapping of
 data Operator = And
               | Or
               | Xor
-              deriving (Eq, Ord, Show)
+              deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 newtype Variable = Variable String
                    deriving (Eq, Ord, Show)
