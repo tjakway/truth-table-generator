@@ -33,3 +33,8 @@ parseEnum = choice $ map parseEnumValue [minBound..maxBound]
 
 parseOperator :: Parser Operator
 parseOperator = parseEnum
+
+-- | a variable is just a single letter
+parseVariable :: Parser Variable
+parseVariable = letter >>= return . Variable . return
+
