@@ -29,12 +29,12 @@ data Statement = NestedStatement Statement
 
 evaluateStatement :: Map.Map Variable Bool -> Statement -> Bool
 evaluateStatement vars (NestedStatement stmt) = evaluateStatement vars stmt
-evaluateStatement vars (Negation stmt) = not . evaluateStatement vars $ stmt
+evaluateStatement vars (NegationStatement stmt) = not . evaluateStatement vars $ stmt
 evaluateStatement vars (VariableStatement thisVar) = lookupOrFail vars thisVar
 -- ^ if this statement just wraps a variable, just look up its value in the table
-evaluateStatement vars (Statement (Up stmt) op _) = evaluateStatement vars stmt
-evaluateStatement vars (Statement _ op (Up stmt)) = evaluateStatement vars stmt
-evaluateStatement vars (Statement (Down first) op (Down second)) = 
+evaluateStatement vars (Statement (NestedStatement stmt) op _) = evaluateStatement vars stmt
+evaluateStatement vars (Statement _ op (NestedStatement stmt)) = evaluateStatement vars stmt
+evaluateStatement vars (Statement (VariableStatement first) op (VariableStatement second)) = 
         let find = lookupOrFail vars in
             evaluateOperator op (find first) (find second)
 
