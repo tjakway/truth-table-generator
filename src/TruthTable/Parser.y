@@ -1,12 +1,7 @@
 {
 module TruthTable.Parser where
 import TruthTable.Types
-}
 
-%name parseGrammar
-%error { parseError }
-
-{
 happyError :: [Token] -> a
 happyError _ = error ("Parse error\n")
 
@@ -16,7 +11,7 @@ data Token =
     | TokenXor
     | TokenOB
     | TokenCB
-    | TokenVar 
+    | TokenVar String
 
 
 lexer :: String -> [Token]
@@ -34,10 +29,15 @@ lexWord cs = case span isAlpha cs of
                 ("or", rest) -> TokenOr : lexer rest
                 ("xor", rest) -> TokenXor : lexer rest
                 (var, rest) -> TokenVar var : lexer rest
-}
-%%
 
+}
+
+
+
+
+%name parseGrammar
 %tokentype { Token }
+%error { parseError }
 %token
    and  { TokenAnd }
    or   { TokenOr }
@@ -47,6 +47,7 @@ lexWord cs = case span isAlpha cs of
    ')'  { TokenCB }
    var  { TokenVar $$ }
    
+%%
 
 POperator : and           { And }
          | or            { Or  }
@@ -63,3 +64,4 @@ PTerm : '-' PStatement
       | PStatement POperator PStatement
 
 program : statement  
+
