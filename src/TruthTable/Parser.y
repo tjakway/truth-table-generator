@@ -4,20 +4,8 @@ import TruthTable.Types
 }
 
 %name parseGrammar
-%tokentype { Token }
 %error { parseError }
 
-%%
-
-%token
-   and  { TokenAnd }
-   or   { TokenOr }
-   xor  { TokenXor }
-   '-'  { TokenNegation }
-   '('  { TokenOB }
-   ')'  { TokenCB }
-   var  { TokenVar }
-   
 {
 happyError :: [Token] -> a
 happyError _ = error ("Parse error\n")
@@ -28,7 +16,7 @@ data Token =
     | TokenXor
     | TokenOB
     | TokenCB
-    | TokenVar
+    | TokenVar 
 
 
 lexer :: String -> [Token]
@@ -47,11 +35,31 @@ lexWord cs = case span isAlpha cs of
                 ("xor", rest) -> TokenXor : lexer rest
                 (var, rest) -> TokenVar var : lexer rest
 }
+%%
 
--- XXX: REWRITE HAPPY-STYLE
-operator ::= and | or | xor           { Operator $1 }
-statement ::=  '-' statement         { Negation $2 }
-                | var                   { VariableStatement $3 }
-                | statement                 { NestedStatement $1 }
+%tokentype { Token }
+%token
+   and  { TokenAnd }
+   or   { TokenOr }
+   xor  { TokenXor }
+   '-'  { TokenNegation }
+   '('  { TokenOB }
+   ')'  { TokenCB }
+   var  { TokenVar $$ }
+   
 
-program ::= statement  
+POperator : and           { And }
+         | or            { Or  }
+         | xor           { Xor }
+PStatement : '-' PStatement         { NegationStatement $2 }
+          | PStatement PStatement   { NestedStatement $2 }
+          | var                   { VariableStatement $1 }
+          | _ POperator _       { Statement (ChooseOneOf $1) $2 (ChooseOneOf $3) }
+
+ChooseOneOf : var        { Down $1 }
+            | PStatement { Up $1 }
+
+PTerm : '-' PStatement
+      | PStatement POperator PStatement
+
+program : statement  
