@@ -1,5 +1,5 @@
 {
-module Grammar where
+module TruthTable.Parser where
 import TruthTable.Types
 }
 
@@ -48,6 +48,7 @@ lexWord cs = case span isAlpha cs of
                 (var, rest) -> TokenVar var : lexer rest
 }
 
+-- XXX: REWRITE HAPPY-STYLE
 operator ::= and | or | xor           { Operator $1 }
 statement ::=  '-' statement         { Negation $2 }
                 | var                   { VariableStatement $3 }
