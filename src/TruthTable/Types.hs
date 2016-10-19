@@ -20,7 +20,7 @@ newtype Variable = Variable String
                    deriving (Eq, Ord, Show)
 
 data Statement = NestedStatement Statement
-               | Negation Statement
+               | NegationStatement Statement
                | VariableStatement Variable
                -- ^ a statement that just wraps a variable so we can negate
                -- variables without further work
