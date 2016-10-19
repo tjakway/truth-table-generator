@@ -52,16 +52,8 @@ lexWord cs = case span isAlpha cs of
 POperator : and           { And }
          | or            { Or  }
          | xor           { Xor }
+
 PStatement : '-' PStatement         { NegationStatement $2 }
           | PStatement PStatement   { NestedStatement $2 }
           | var                   { VariableStatement $1 }
-          | _ POperator _       { Statement (ChooseOneOf $1) $2 (ChooseOneOf $3) }
-
-ChooseOneOf : var        { Down $1 }
-            | PStatement { Up $1 }
-
-PTerm : '-' PStatement
-      | PStatement POperator PStatement
-
-program : statement  
-
+          | PStatement POperator PStatement       { Statement $1 $2 $3 }

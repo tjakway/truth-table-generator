@@ -24,7 +24,7 @@ data Statement = NestedStatement Statement
                | VariableStatement Variable
                -- ^ a statement that just wraps a variable so we can negate
                -- variables without further work
-               | Statement (OneOf Statement Variable) Operator (OneOf Statement Variable)
+               | Statement Statement Operator Statement
                 deriving (Eq, Show)
 
 evaluateStatement :: Map.Map Variable Bool -> Statement -> Bool
