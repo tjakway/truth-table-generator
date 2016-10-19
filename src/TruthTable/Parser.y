@@ -1,6 +1,7 @@
 {
 module TruthTable.Parser where
 import TruthTable.Types
+import Data.Char (isAlpha, isSpace)
 }
 
 
@@ -26,13 +27,13 @@ POperator : and           { And }
 
 PStatement : '-' PStatement         { NegationStatement $2 }
           | PStatement PStatement   { NestedStatement $2 }
-          | var                   { VariableStatement $1 }
+          | var                   { VariableStatement (Variable $1) }
           | PStatement POperator PStatement       { Statement $1 $2 $3 }
 
 {
 
-happyError :: [Token] -> a
-happyError _ = error ("Parse error\n")
+parseError :: [Token] -> a
+parseError _ = error ("Parse error\n")
 
 data Token = 
     TokenAnd
