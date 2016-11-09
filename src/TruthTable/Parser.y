@@ -61,4 +61,7 @@ lexWord cs = case span isAlpha cs of
                 ("xor", rest) -> TokenXor : lexer rest
                 (var, rest) -> TokenVar var : lexer rest
 
+parse :: String -> Statement
+parse = parseGrammar . lexer
+
 }
