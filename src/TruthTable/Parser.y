@@ -14,6 +14,9 @@ import Data.Char (isAlpha, isSpace)
    and  { TokenAnd }
    or   { TokenOr }
    xor  { TokenXor }
+   And  { TokenAnd }
+   Or   { TokenOr }
+   Xor  { TokenXor }
    '-'  { TokenNegation }
    '('  { TokenOB }
    ')'  { TokenCB }
@@ -22,9 +25,11 @@ import Data.Char (isAlpha, isSpace)
 %%
 
 PStatement : '-' PStatement         { NegationStatement $2 }
-          | PStatement PStatement   { NestedStatement $2 }
           | var                   { VariableStatement (Variable $1) }
+          | '(' PStatement ')' { NestedStatement $2 }
+          | PStatement { NestedStatement $1 }
           | PStatement POperator PStatement       { Statement $1 $2 $3 }
+          
 
 POperator : and           { And }
          | or            { Or  }
@@ -60,6 +65,9 @@ lexWord cs = case span isAlpha cs of
                 ("and", rest) -> TokenAnd : lexer rest
                 ("or", rest) -> TokenOr : lexer rest
                 ("xor", rest) -> TokenXor : lexer rest
+                ("And", rest) -> TokenAnd : lexer rest
+                ("Or", rest) -> TokenOr : lexer rest
+                ("Xor", rest) -> TokenXor : lexer rest
                 (var, rest) -> TokenVar var : lexer rest
 
 parse :: String -> Statement
