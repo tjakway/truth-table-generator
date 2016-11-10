@@ -1,6 +1,5 @@
 module TruthTable.Logic where
 
-import TruthTable.OneOf
 import TruthTable.Types
 import qualified Data.Map.Strict as Map 
 
