@@ -13,6 +13,11 @@ basicAndTest = assertEqual
     (Statement (VariableStatement (Variable "x")) And (VariableStatement (Variable "y")))
     (Parser.parse "x And y")
 
+basicNegativeTest :: Assertion
+basicNegativeTest = assertEqual
+    "The parser can understand basic negation"
+    (NegationStatement (NestedStatement (Statement (VariableStatement (Variable "x")) And (VariableStatement (Variable "y")))))
+    (Parser.parse "-(x And y)")
 
 
-tests = testGroup "ParserTests" [testCase "basicAndTest" basicAndTest]
+tests = testGroup "ParserTests" [testCase "basicAndTest" basicAndTest, testCase "basicNegativeTest" basicNegativeTest]
