@@ -23,7 +23,6 @@ evaluateStatement vars s =
                       return $ fOp firstResult secondResult
 
 evaluateOperator :: Operator -> Bool -> Bool -> Bool
-evaluateOperator op first second 
-                    | op == And = first && second
-                    | op == Or  = first || second
-                    | op == Xor = (first || second) && (first /= second)
+evaluateOperator And a b = (a && b)
+evaluateOperator Or a b = (a || b)
+evaluateOperator Xor a b = (a || b) && (a /= b)
