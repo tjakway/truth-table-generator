@@ -24,10 +24,9 @@ import Data.Char (isAlpha, isSpace)
    
 %%
 
-PStatement : '-' PStatement         { NegationStatement $2 }
+PStatement : '-' PStatement       { NegationStatement $2 }
           | var                   { VariableStatement (Variable $1) }
-          | '(' PStatement ')' { NestedStatement $2 }
-          | PStatement { NestedStatement $1 }
+          | '(' PStatement ')'    { NestedStatement $2 }
           | PStatement POperator PStatement       { Statement $1 $2 $3 }
           
 
