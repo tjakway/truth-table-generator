@@ -21,14 +21,15 @@ import Data.Char (isAlpha, isSpace)
    
 %%
 
-POperator : and           { And }
-         | or            { Or  }
-         | xor           { Xor }
-
 PStatement : '-' PStatement         { NegationStatement $2 }
           | PStatement PStatement   { NestedStatement $2 }
           | var                   { VariableStatement (Variable $1) }
           | PStatement POperator PStatement       { Statement $1 $2 $3 }
+
+POperator : and           { And }
+         | or            { Or  }
+         | xor           { Xor }
+
 
 {
 
