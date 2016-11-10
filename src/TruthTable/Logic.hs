@@ -9,19 +9,18 @@ lookupEither k m = case Map.lookup k m of Just r  -> Right r
                                           Nothing -> Left k
 
 evaluateStatement :: Map.Map Variable Bool -> Statement -> Either Variable Bool
-evaluateStatement vars (StatementResult b) = Right b
-evaluateStatement vars (NestedStatement stmt) = evaluateStatement vars stmt
-evaluateStatement vars (Statement (VariableStatement first) op (VariableStatement second)) = 
-        let find x = lookupEither x vars in
-            find first >>= \f ->
-            find second >>= \s -> 
-            return $ evaluateOperator op f s
-evaluateStatement vars (NegationStatement stmt) = fmap not $ evaluateStatement vars $ stmt
-evaluateStatement vars (VariableStatement thisVar) = lookupEither thisVar vars
--- ^ if this statement just wraps a variable, just look up its value in the table
-evaluateStatement vars s = let eval = fmap StatementResult $ evaluateStatement vars in
-    case s of (Statement (NestedStatement stmt) op x) -> (eval stmt) >>= \res -> eval (Statement res op x)
-              (Statement x op (NestedStatement stmt)) -> (eval stmt) >>= eval $ Statement x op 
+evaluateStatement vars s = 
+        let eval = evaluateStatement vars in
+            -- ^ evaluate in the current context
+        case s of StatementResult b -> Right b
+                  NestedStatement stmt -> eval stmt
+                  VariableStatement thisVar -> lookupEither thisVar vars
+                  NegationStatement stmt -> fmap not $ eval stmt
+                  Statement s1 op s2 -> do
+                      let fOp = evaluateOperator op
+                      firstResult <- eval s1
+                      secondResult <- eval s2
+                      return $ fOp firstResult secondResult
 
 evaluateOperator :: Operator -> Bool -> Bool -> Bool
 evaluateOperator op first second 
