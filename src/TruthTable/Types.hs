@@ -11,6 +11,10 @@ lookupOrFail mapping item  = case Map.lookup item mapping of
                                       Nothing -> error ("Lookup of " ++ (show item) ++ " in " ++ (show mapping) ++ " failed!")
 
 
+lookupEither :: Ord k => k -> Map.Map k v -> Either k v
+lookupEither k m = case Map.lookup k m of Just r  -> Right r
+                                          Nothing -> Left k
+
 data Operator = And
               | Or
               | Xor
@@ -27,7 +31,7 @@ data Statement = NestedStatement Statement
                | Statement Statement Operator Statement
                 deriving (Eq, Show)
 
-evaluateStatement :: Map.Map Variable Bool -> Statement -> Bool
+evaluateStatement :: Map.Map Variable Bool -> Statement -> Variable
 evaluateStatement vars (NestedStatement stmt) = evaluateStatement vars stmt
 evaluateStatement vars (NegationStatement stmt) = not . evaluateStatement vars $ stmt
 evaluateStatement vars (VariableStatement thisVar) = lookupOrFail vars thisVar
