@@ -1,6 +1,9 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module TruthTable.Logic where
 
 import TruthTable.Types
+import TruthTable.Mapping
+import Data.Bifunctor
 import qualified Data.Map.Strict as Map 
 
 lookupEither :: Ord k => k -> Map.Map k v -> Either k v
@@ -28,11 +31,15 @@ evaluateOperator Xor a b = (a || b) && (a /= b)
 
 
 transformLefts :: (a -> c) -> [Either a b] -> ([c], [b])
-transformLefts alt = foldr f ([], [])
-    where f (Left x)  (cs, ds) = (cs ++ (f x), ds)
-          f (Right x) (cs, ds) = (cs, ds ++ x)
+transformLefts alt = bimap reverse reverse . foldr f ([], [])
+    where f (Left x)  (cs, ds) = ((alt x) : cs, ds)
+          f (Right x) (cs, ds) = (cs, x : ds)
 
-genTruthTable :: Statement -> [Either Variable (Map.Map Variable Bool, Bool)]
-genTruthTable stmt = map (\(truthSet, evalRes) -> undefined ) -- XXX
+genTruthTable :: Statement -> Either [(Map.Map Variable Bool, String)] [(Map.Map Variable Bool, Bool)]
+genTruthTable stmt = undefined -- XXX
+
         where truthTable = binaryToMap . uniqueVariables $ stmt
               allResults = map (\truthSet -> (truthSet, evaluateStatement truthSet stmt)) truthTable
+
+              errPrinter :: Variable -> String
+              errPrinter (Variable varName) = undefined -- XXX
