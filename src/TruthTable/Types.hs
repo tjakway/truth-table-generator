@@ -1,7 +1,6 @@
 module TruthTable.Types where
 
-import TruthTable.OneOf
-
+import Data.List (nub)
 
 data Operator = And
               | Or
@@ -20,3 +19,10 @@ data Statement = StatementResult Bool
                | Statement Statement Operator Statement
                 deriving (Eq, Show)
 
+uniqueVariables :: Statement -> [Variable]
+uniqueVariables = nub . variables
+    where variables (StatementResult _) = []
+          variables (NestedStatement s) = variables s
+          variables (NegationStatement s) = variables s
+          variables (VariableStatement v) = [v]
+          variables (Statement s1 op s2) = (variables s1) ++ (variables s2)
