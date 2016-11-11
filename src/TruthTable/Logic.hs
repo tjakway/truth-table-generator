@@ -25,3 +25,14 @@ evaluateOperator :: Operator -> Bool -> Bool -> Bool
 evaluateOperator And a b = (a && b)
 evaluateOperator Or a b = (a || b)
 evaluateOperator Xor a b = (a || b) && (a /= b)
+
+
+transformLefts :: (a -> c) -> [Either a b] -> ([c], [b])
+transformLefts alt = foldr f ([], [])
+    where f (Left x)  (cs, ds) = (cs ++ (f x), ds)
+          f (Right x) (cs, ds) = (cs, ds ++ x)
+
+genTruthTable :: Statement -> [Either Variable (Map.Map Variable Bool, Bool)]
+genTruthTable stmt = map (\(truthSet, evalRes) -> undefined ) -- XXX
+        where truthTable = binaryToMap . uniqueVariables $ stmt
+              allResults = map (\truthSet -> (truthSet, evaluateStatement truthSet stmt)) truthTable
