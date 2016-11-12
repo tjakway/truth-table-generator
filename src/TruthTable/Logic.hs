@@ -4,6 +4,7 @@ module TruthTable.Logic where
 import TruthTable.Types
 import TruthTable.Mapping
 import Data.Bifunctor
+import Data.List (nub)
 import qualified Data.Map.Strict as Map 
 
 uniqueVariables :: Statement -> [Variable]
@@ -47,11 +48,19 @@ transformLefts alt = bimap reverse reverse . foldr f ([], [])
     where f (Left x)  (cs, ds) = ((alt x) : cs, ds)
           f (Right x) (cs, ds) = (cs, x : ds)
 
+
+catEithers :: [Either a b] -> Either [a] [b]
+catEithers = foldr f (Right [])
+    where f (Left x) (Left cs) = Left $ x : cs
+          f (Left x) (Right _) = Left [x]
+          f (Right x) (Right ds) = Right $ x : ds
+          f (Right x) cs = cs
+
 genTruthTable :: Statement -> ([(TruthSet, String)], [(TruthSet, Bool)])
 genTruthTable stmt = undefined -- XXX
 
         where inputTruthSets = binaryToMap . uniqueVariables $ stmt
-              allResults = map (\truthSet -> (truthSet, evaluateStatement truthSet stmt)) truthTable
+--              allResults = map (\truthSet -> (truthSet, evaluateStatement truthSet stmt)) truthTable
 
               errPrinter :: Variable -> String
               errPrinter (Variable varName) = undefined -- XXX
