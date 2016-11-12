@@ -6,6 +6,18 @@ import TruthTable.Mapping
 import Data.Bifunctor
 import qualified Data.Map.Strict as Map 
 
+uniqueVariables :: Statement -> [Variable]
+uniqueVariables = nub . variables
+    where variables (StatementResult _) = []
+          variables (NestedStatement s) = variables s
+          variables (NegationStatement s) = variables s
+          variables (VariableStatement v) = [v]
+          variables (Statement s1 op s2) = (variables s1) ++ (variables s2)
+
+getTruthSets :: Statement -> [TruthSet]
+getTruthSets = binaryToMap . uniqueVariables
+
+
 lookupEither :: Ord k => k -> Map.Map k v -> Either k v
 lookupEither k m = case Map.lookup k m of Just r  -> Right r
                                           Nothing -> Left k
@@ -38,7 +50,7 @@ transformLefts alt = bimap reverse reverse . foldr f ([], [])
 genTruthTable :: Statement -> ([(TruthSet, String)], [(TruthSet, Bool)])
 genTruthTable stmt = undefined -- XXX
 
-        where truthTable = binaryToMap . uniqueVariables $ stmt
+        where inputTruthSets = binaryToMap . uniqueVariables $ stmt
               allResults = map (\truthSet -> (truthSet, evaluateStatement truthSet stmt)) truthTable
 
               errPrinter :: Variable -> String
