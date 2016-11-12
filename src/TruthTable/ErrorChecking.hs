@@ -22,21 +22,20 @@ validateTruthTable truthTable = undefined
           numVariables = length . variables $ truthTable
 
 
-eitherCheckVariableLengthError :: TruthTable -> Either ErrorType TruthTable
-eitherCheckVariableLengthError truthTable = 
-        case checkVariableLengthError truthTable of
+checkVariableLengthError :: TruthTable -> Either ErrorType TruthTable
+checkVariableLengthError truthTable = 
+        case checkVariableLengthError' truthTable of
             [] -> Right truthTable
             failingTruthSets  -> Left $ VariableLengthError failingTruthSets
 
-checkVariableLengthError :: TruthTable -> [TruthSet]
-checkVariableLengthError truthTable = 
-        reverse .
-        foldr (\thisTruthSet failingSets -> if Map.size thisTruthSet /= numVariables 
-            then thisTruthSet : failingSets
-            else failingSets ) [] 
-            . truthSets $ truthTable
+    where checkVariableLengthError' :: TruthTable -> [TruthSet]
+          checkVariableLengthError' truthTable = 
+            reverse .
+            foldr (\thisTruthSet failingSets -> if Map.size thisTruthSet /= numVariables 
+                    then thisTruthSet : failingSets
+                    else failingSets ) [] 
+                    . truthSets $ truthTable
 
-    where numVariables :: Int
           numVariables = length . variables $ truthTable
 
 showError :: ErrorType -> String
