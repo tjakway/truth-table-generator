@@ -23,6 +23,9 @@ lookupEither :: Ord k => k -> Map.Map k v -> Either k v
 lookupEither k m = case Map.lookup k m of Just r  -> Right r
                                           Nothing -> Left k
 
+-- | TODO: Better error handling: Change return type to 
+-- Either (TruthSet, Variable) Bool so we have context for the bad input
+-- (can say "could not find Variable in TruthSet")
 evaluateStatement :: TruthSet -> Statement -> Either Variable Bool
 evaluateStatement vars s = 
         let eval = evaluateStatement vars in
@@ -56,11 +59,25 @@ catEithers = foldr f (Right [])
           f (Right x) (Right ds) = Right $ x : ds
           f (Right _) cs = cs
 
-genTruthTable :: Statement -> Either [Variable] [(TruthSet, Bool)]
-genTruthTable stmt = catEithers allResults
 
-        where inputTruthSets :: [TruthSet]
-              inputTruthSets = binaryToMap . uniqueVariables $ stmt
+-- | TODO: should probably change Either [Variable] TruthTable to 
+-- Either [TruthSet] TruthTable so we can see all of the problematic input
+-- instead of just getting a list of bad variables with no context
+genTruthTable :: Statement -> Either [Variable] TruthTable
+genTruthTable stmt = case genTruthTable' stmt of Left vars -> Left vars
+                                                 Right res -> Right . (uncurry $ TruthTable vars) . unzip $ res
+
+        where 
+              genTruthTable' :: Statement -> Either [Variable] [(TruthSet, Bool)]
+              genTruthTable' stmt = catEithers allResults 
+
+              vars :: [Variable]
+              vars = uniqueVariables stmt
+
+              inputTruthSets :: [TruthSet]
+              inputTruthSets = binaryToMap vars
+
+              allResults :: [Either Variable (TruthSet, Bool)]
               allResults = map (\thisTruthSet -> 
                                evaluateStatement thisTruthSet stmt >>= \r -> return (thisTruthSet, r)) inputTruthSets
 --              allResults = map (\truthSet -> (truthSet, evaluateStatement truthSet stmt)) truthTable
