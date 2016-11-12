@@ -18,7 +18,10 @@ data ErrorType = VariableLengthError [TruthSet]
                     deriving (Show)
 
 validateTruthTable :: TruthTable -> Either ErrorType TruthTable
-validateTruthTable truthTable = undefined
+validateTruthTable a = 
+        checkVariableLength a >>= 
+        checkNonuniqueTruthSet >>= 
+        checkWrongNumberOfTruthSets
 
 
 checkVariableLength :: TruthTable -> Either ErrorType TruthTable
@@ -28,14 +31,14 @@ checkVariableLength truthTable =
             failingTruthSets  -> Left $ VariableLengthError failingTruthSets
 
     where checkVariableLength' :: TruthTable -> [TruthSet]
-          checkVariableLength' truthTable = 
+          checkVariableLength' truthTable' = 
+            let numVariables = length . variables $ truthTable' in
             reverse .
             foldr (\thisTruthSet failingSets -> if Map.size thisTruthSet /= numVariables 
                     then thisTruthSet : failingSets
                     else failingSets ) [] 
-                    . truthSets $ truthTable
+                    . truthSets $ truthTable'
 
-          numVariables = length . variables $ truthTable
 
 checkNonuniqueTruthSet :: TruthTable -> Either ErrorType TruthTable
 checkNonuniqueTruthSet truthTable
