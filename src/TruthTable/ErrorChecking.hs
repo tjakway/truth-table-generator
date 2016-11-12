@@ -18,8 +18,6 @@ data ErrorType = VariableLengthError [TruthSet]
 
 validateTruthTable :: TruthTable -> Either ErrorType TruthTable
 validateTruthTable truthTable = undefined
-    where numVariables :: Int
-          numVariables = length . variables $ truthTable
 
 
 checkVariableLengthError :: TruthTable -> Either ErrorType TruthTable
