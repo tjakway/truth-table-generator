@@ -54,13 +54,13 @@ catEithers = foldr f (Right [])
     where f (Left x) (Left cs) = Left $ x : cs
           f (Left x) (Right _) = Left [x]
           f (Right x) (Right ds) = Right $ x : ds
-          f (Right x) cs = cs
+          f (Right _) cs = cs
 
-genTruthTable :: Statement -> ([(TruthSet, String)], [(TruthSet, Bool)])
-genTruthTable stmt = undefined -- XXX
+genTruthTable :: Statement -> Either [Variable] [(TruthSet, Bool)]
+genTruthTable stmt = catEithers allResults
 
-        where inputTruthSets = binaryToMap . uniqueVariables $ stmt
+        where inputTruthSets :: [TruthSet]
+              inputTruthSets = binaryToMap . uniqueVariables $ stmt
+              allResults = map (\thisTruthSet -> 
+                               evaluateStatement thisTruthSet stmt >>= \r -> return (thisTruthSet, r)) inputTruthSets
 --              allResults = map (\truthSet -> (truthSet, evaluateStatement truthSet stmt)) truthTable
-
-              errPrinter :: Variable -> String
-              errPrinter (Variable varName) = undefined -- XXX
