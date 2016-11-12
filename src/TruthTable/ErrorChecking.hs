@@ -22,6 +22,12 @@ validateTruthTable truthTable = undefined
           numVariables = length . variables $ truthTable
 
 
+eitherCheckVariableLengthError :: TruthTable -> Either ErrorType TruthTable
+eitherCheckVariableLengthError truthTable = 
+        case checkVariableLengthError truthTable of
+            [] -> Right truthTable
+            failingTruthSets  -> Left $ VariableLengthError failingTruthSets
+
 checkVariableLengthError :: TruthTable -> [TruthSet]
 checkVariableLengthError truthTable = 
         reverse .
