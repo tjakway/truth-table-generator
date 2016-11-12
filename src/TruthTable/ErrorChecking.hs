@@ -6,6 +6,7 @@ module TruthTable.ErrorChecking
 where
 
 import qualified Data.Map.Strict as Map 
+import Data.List (nub)
 import TruthTable.Types
 
 data ErrorType = VariableLengthError [TruthSet]
@@ -20,14 +21,14 @@ validateTruthTable :: TruthTable -> Either ErrorType TruthTable
 validateTruthTable truthTable = undefined
 
 
-checkVariableLengthError :: TruthTable -> Either ErrorType TruthTable
-checkVariableLengthError truthTable = 
-        case checkVariableLengthError' truthTable of
+checkVariableLength :: TruthTable -> Either ErrorType TruthTable
+checkVariableLength truthTable = 
+        case checkVariableLength' truthTable of
             [] -> Right truthTable
             failingTruthSets  -> Left $ VariableLengthError failingTruthSets
 
-    where checkVariableLengthError' :: TruthTable -> [TruthSet]
-          checkVariableLengthError' truthTable = 
+    where checkVariableLength' :: TruthTable -> [TruthSet]
+          checkVariableLength' truthTable = 
             reverse .
             foldr (\thisTruthSet failingSets -> if Map.size thisTruthSet /= numVariables 
                     then thisTruthSet : failingSets
@@ -35,6 +36,15 @@ checkVariableLengthError truthTable =
                     . truthSets $ truthTable
 
           numVariables = length . variables $ truthTable
+
+checkNonuniqueTruthSet :: TruthTable -> Either ErrorType TruthTable
+checkNonuniqueTruthSet truthTable
+                        | nub tSets == tSets = Right truthTable
+                        | otherwise = Left $ NonuniqueTruthValueError tSets
+    where tSets = truthSets truthTable
+
+checkWrongNumberOfTruthSets :: TruthTable -> Either ErrorType TruthTable
+checkWrongNumberOfTruthSets = undefined
 
 showError :: ErrorType -> String
 showError = show -- XXX: implement
