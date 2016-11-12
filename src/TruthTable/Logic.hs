@@ -10,7 +10,7 @@ lookupEither :: Ord k => k -> Map.Map k v -> Either k v
 lookupEither k m = case Map.lookup k m of Just r  -> Right r
                                           Nothing -> Left k
 
-evaluateStatement :: Map.Map Variable Bool -> Statement -> Either Variable Bool
+evaluateStatement :: TruthSet -> Statement -> Either Variable Bool
 evaluateStatement vars s = 
         let eval = evaluateStatement vars in
             -- ^ evaluate in the current context
@@ -35,7 +35,7 @@ transformLefts alt = bimap reverse reverse . foldr f ([], [])
     where f (Left x)  (cs, ds) = ((alt x) : cs, ds)
           f (Right x) (cs, ds) = (cs, x : ds)
 
-genTruthTable :: Statement -> Either [(Map.Map Variable Bool, String)] [(Map.Map Variable Bool, Bool)]
+genTruthTable :: Statement -> ([(TruthSet, String)], [(TruthSet, Bool)])
 genTruthTable stmt = undefined -- XXX
 
         where truthTable = binaryToMap . uniqueVariables $ stmt

@@ -1,6 +1,13 @@
 module TruthTable.Types where
 
+import qualified Data.Map.Strict as Map 
 import Data.List (nub)
+
+type TruthSet = Map.Map Variable Bool
+
+data TruthTable = TruthTable 
+                { variables :: [Variable],
+                  truthSets :: [TruthSet] }
 
 data Operator = And
               | Or
