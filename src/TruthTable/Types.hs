@@ -11,6 +11,7 @@ data TruthTable = TruthTable
                   rs   :: [Bool] }
                   -- ^ the result of evaluating each statement with the
                   -- given truth values
+                deriving (Eq, Show)
 
 results :: TruthTable -> [(TruthSet, Bool)]
 results truthTable = zip (truthSets truthTable) (rs truthTable)
