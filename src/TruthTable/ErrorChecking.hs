@@ -13,8 +13,7 @@ data ErrorType = VariableLengthError [TruthSet]
                     -- ^ all failing TruthSets
                | NonuniqueTruthValueError [TruthSet]
                     -- ^ all nonunique TruthSets
-               | WrongNumberOfTruthSetsError Int Int
-                    -- ^ Actual and Expected
+               | WrongNumberOfTruthSetsError { actual :: Int, expected :: Int }
                     deriving (Show)
 
 validateTruthTable :: TruthTable -> Either ErrorType TruthTable

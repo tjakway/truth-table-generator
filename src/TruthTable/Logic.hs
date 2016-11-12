@@ -63,4 +63,3 @@ genTruthTable stmt = catEithers allResults
               inputTruthSets = binaryToMap . uniqueVariables $ stmt
               allResults = map (\thisTruthSet -> 
                                evaluateStatement thisTruthSet stmt >>= \r -> return (thisTruthSet, r)) inputTruthSets
---              allResults = map (\truthSet -> (truthSet, evaluateStatement truthSet stmt)) truthTable
