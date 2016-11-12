@@ -7,7 +7,13 @@ type TruthSet = Map.Map Variable Bool
 
 data TruthTable = TruthTable 
                 { variables :: [Variable],
-                  truthSets :: [TruthSet] }
+                  truthSets :: [TruthSet],
+                  rs   :: [Bool] }
+                  -- ^ the result of evaluating each statement with the
+                  -- given truth values
+
+results :: TruthTable -> [(TruthSet, Bool)]
+results truthTable = zip (truthSets truthTable) (rs truthTable)
 
 data Operator = And
               | Or
