@@ -80,4 +80,3 @@ genTruthTable stmt = case genTruthTable' stmt of Left vars -> Left vars
               allResults :: [Either Variable (TruthSet, Bool)]
               allResults = map (\thisTruthSet -> 
                                evaluateStatement thisTruthSet stmt >>= \r -> return (thisTruthSet, r)) inputTruthSets
---              allResults = map (\truthSet -> (truthSet, evaluateStatement truthSet stmt)) truthTable
