@@ -29,7 +29,7 @@ lookupEither k m = case Map.lookup k m of Just r  -> Right r
 evaluateStatement :: TruthSet -> Statement -> Either Variable Bool
 evaluateStatement vars s = 
         let eval = evaluateStatement vars in
-            -- ^ evaluate in the current context
+            -- ^ evaluate in the context of the current set of truth values
         case s of StatementResult b -> Right b
                   NestedStatement stmt -> eval stmt
                   VariableStatement thisVar -> lookupEither thisVar vars
