@@ -14,7 +14,7 @@ data ErrorType = VariableLengthError [TruthSet]
                | NonuniqueTruthValueError [TruthSet]
                     -- ^ all nonunique TruthSets
                | WrongNumberOfTruthSetsError Int Int
-                    -- ^ Expected and Actual
+                    -- ^ Actual and Expected
                     deriving (Show)
 
 validateTruthTable :: TruthTable -> Either ErrorType TruthTable
@@ -44,7 +44,12 @@ checkNonuniqueTruthSet truthTable
     where tSets = truthSets truthTable
 
 checkWrongNumberOfTruthSets :: TruthTable -> Either ErrorType TruthTable
-checkWrongNumberOfTruthSets = undefined
+checkWrongNumberOfTruthSets truthTable 
+                        | actualNumTruthSets == expectedNumTruthSets = Right truthTable
+                        | otherwise = Left $ WrongNumberOfTruthSetsError actualNumTruthSets expectedNumTruthSets
+    where actualNumTruthSets   = length. truthSets $ truthTable
+          expectedNumTruthSets = (2 ^) . length . variables $ truthTable
+
 
 showError :: ErrorType -> String
 showError = show -- XXX: implement
