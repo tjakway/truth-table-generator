@@ -26,7 +26,7 @@ Library
   ghc-options:         -Wall -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-unused-do-bind -fwarn-incomplete-uni-patterns
   build-depends:       base, containers, parsec, array
   
-  exposed-modules: TruthTable.Parser, TruthTable.Mapping, TruthTable.OneOf, TruthTable.Types, TruthTable.Logic
+  exposed-modules: TruthTable.Parser, TruthTable.Mapping, TruthTable.OneOf, TruthTable.Types, TruthTable.Logic, TruthTable.ErrorChecking
 
   if flag(test)
     CPP-Options: -DTESTING
