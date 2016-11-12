@@ -45,13 +45,6 @@ evaluateOperator And a b = (a && b)
 evaluateOperator Or a b = (a || b)
 evaluateOperator Xor a b = (a || b) && (a /= b)
 
-
-transformLefts :: (a -> c) -> [Either a b] -> ([c], [b])
-transformLefts alt = bimap reverse reverse . foldr f ([], [])
-    where f (Left x)  (cs, ds) = ((alt x) : cs, ds)
-          f (Right x) (cs, ds) = (cs, x : ds)
-
-
 catEithers :: [Either a b] -> Either [a] [b]
 catEithers = foldr f (Right [])
     where f (Left x) (Left cs) = Left $ x : cs
