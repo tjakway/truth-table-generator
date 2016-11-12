@@ -18,19 +18,22 @@ data ErrorType = VariableLengthError [TruthSet]
 
 validateTruthTable :: TruthTable -> Either ErrorType TruthTable
 validateTruthTable truthTable = undefined
-    where numVariables :: Int
-          numVariables = length . variables $ truthTable
 
 
-checkVariableLengthError :: TruthTable -> [TruthSet]
+checkVariableLengthError :: TruthTable -> Either ErrorType TruthTable
 checkVariableLengthError truthTable = 
-        reverse .
-        foldr (\thisTruthSet failingSets -> if Map.size thisTruthSet /= numVariables 
-            then thisTruthSet : failingSets
-            else failingSets ) [] 
-            . truthSets $ truthTable
+        case checkVariableLengthError' truthTable of
+            [] -> Right truthTable
+            failingTruthSets  -> Left $ VariableLengthError failingTruthSets
 
-    where numVariables :: Int
+    where checkVariableLengthError' :: TruthTable -> [TruthSet]
+          checkVariableLengthError' truthTable = 
+            reverse .
+            foldr (\thisTruthSet failingSets -> if Map.size thisTruthSet /= numVariables 
+                    then thisTruthSet : failingSets
+                    else failingSets ) [] 
+                    . truthSets $ truthTable
+
           numVariables = length . variables $ truthTable
 
 showError :: ErrorType -> String
