@@ -21,6 +21,7 @@ default_config = PrintConfig { delimiter= "\t", trueString = "T", falseString = 
 
 -- | take a row from the TruthTable, return it, and update state to reflect
 -- this
+-- XXX: handle if the TruthTable is empty
 takeRow :: Printer (TruthSet, Bool)
 takeRow = do
         (conf, truthTable) <- get
