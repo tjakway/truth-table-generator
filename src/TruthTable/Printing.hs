@@ -83,3 +83,11 @@ printRows = do
                      -- we have to bind twice: once to unwrap the state
                      -- monad, again to unwrap the Either type
                      else printRows >>= (\nextRowR -> return $ nextRowR >>= (\nextRow -> Right $ printedRow ++ "\n" ++ nextRow))
+
+
+printM :: Printer (Either String String)
+printM = do
+        header <- printHeader
+        rowsR <- printRows
+        case rowsR of (Left e) -> return . Left $ e
+                      (Right printedRows) -> return . Right $ header ++ printedRows
