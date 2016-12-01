@@ -1,4 +1,9 @@
-module TruthTable.Printing where
+module TruthTable.Printing
+(PrintConfig(..),
+printM,
+printWithDefaultConfig
+)
+where
 
 import TruthTable.Types
 import Control.Monad.State.Lazy
@@ -10,6 +15,9 @@ data PrintConfig = PrintConfig {
                  }
 
 type Printer = State (PrintConfig, TruthTable)
+
+default_config :: PrintConfig
+default_config = PrintConfig { delimiter= "\t", trueString = "T", falseString = "F" }
 
 -- | take a row from the TruthTable, return it, and update state to reflect
 -- this
@@ -92,3 +100,6 @@ printM = do
         --prepend the header if the message is valid
         case rowsR of (Left e) -> return . Left $ e
                       (Right printedRows) -> return . Right $ header ++ "\n" ++ printedRows
+
+printWithDefaultConfig :: TruthTable -> Either String String
+printWithDefaultConfig truthTable = evalState printM (default_config, truthTable)
