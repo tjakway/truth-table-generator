@@ -89,5 +89,6 @@ printM :: Printer (Either String String)
 printM = do
         header <- printHeader
         rowsR <- printRows
+        --prepend the header if the message is valid
         case rowsR of (Left e) -> return . Left $ e
-                      (Right printedRows) -> return . Right $ header ++ printedRows
+                      (Right printedRows) -> return . Right $ header ++ "\n" ++ printedRows
