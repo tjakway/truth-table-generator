@@ -13,13 +13,14 @@ import Control.Monad.State.Strict
 data PrintConfig = PrintConfig {
                  delimiter :: String,
                  trueString :: String,
-                 falseString :: String
+                 falseString :: String,
+                 resultColumnName :: String
                  }
 
 type Printer = State (PrintConfig, TruthTable)
 
 default_config :: PrintConfig
-default_config = PrintConfig { delimiter= "\t", trueString = "T", falseString = "F" }
+default_config = PrintConfig { delimiter= "\t", trueString = "T", falseString = "F", resultColumnName = "Result" }
 
 -- | take a row from the TruthTable, return it, and update state to reflect
 -- this
@@ -79,7 +80,11 @@ printHeader = do
 
         -- TODO: consider printing the first item separately so the line
         -- doesn't start with a delimiter
-        return $ foldr (\(Variable varName) acc -> acc ++ delim ++ varName) "" vars
+        let header = foldr (\(Variable varName) acc -> acc ++ delim ++ varName) "" vars
+            resColName = resultColumnName conf
+        
+        -- have to add the result column header explicitly
+        return $ header ++ delim ++ resColName
         
 
 printRows :: Printer (Either String String)
