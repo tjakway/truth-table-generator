@@ -12,7 +12,7 @@ uniqueVariables = nub . vars
           vars (NestedStatement s) = vars s
           vars (NegationStatement s) = vars s
           vars (VariableStatement v) = [v]
-          vars (Statement s1 op s2) = (vars s1) ++ (vars s2)
+          vars (Statement s1 _ s2) = (vars s1) ++ (vars s2)
 
 getTruthSets :: Statement -> [TruthSet]
 getTruthSets = binaryToMap . uniqueVariables
@@ -56,12 +56,12 @@ catEithers = foldr f (Right [])
 -- Either [TruthSet] TruthTable so we can see all of the problematic input
 -- instead of just getting a list of bad variables with no context
 genTruthTable :: Statement -> Either [Variable] TruthTable
-genTruthTable stmt = case genTruthTable' stmt of Left vars -> Left vars
-                                                 Right res -> Right . (uncurry $ TruthTable vars) . unzip $ res
+genTruthTable stmt = case genTruthTable' of Left vs -> Left vs
+                                            Right res -> Right . (uncurry $ TruthTable vars) . unzip $ res
 
         where 
-              genTruthTable' :: Statement -> Either [Variable] [(TruthSet, Bool)]
-              genTruthTable' stmt = catEithers allResults 
+              genTruthTable' :: Either [Variable] [(TruthSet, Bool)]
+              genTruthTable' = catEithers allResults 
 
               vars :: [Variable]
               vars = uniqueVariables stmt
