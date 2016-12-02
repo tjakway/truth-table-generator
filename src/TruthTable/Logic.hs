@@ -3,17 +3,16 @@ module TruthTable.Logic where
 
 import TruthTable.Types
 import TruthTable.Mapping
-import Data.Bifunctor
 import Data.List (nub)
 import qualified Data.Map.Strict as Map 
 
 uniqueVariables :: Statement -> [Variable]
-uniqueVariables = nub . variables
-    where variables (StatementResult _) = []
-          variables (NestedStatement s) = variables s
-          variables (NegationStatement s) = variables s
-          variables (VariableStatement v) = [v]
-          variables (Statement s1 op s2) = (variables s1) ++ (variables s2)
+uniqueVariables = nub . vars
+    where vars (StatementResult _) = []
+          vars (NestedStatement s) = vars s
+          vars (NegationStatement s) = vars s
+          vars (VariableStatement v) = [v]
+          vars (Statement s1 op s2) = (vars s1) ++ (vars s2)
 
 getTruthSets :: Statement -> [TruthSet]
 getTruthSets = binaryToMap . uniqueVariables
