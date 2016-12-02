@@ -6,7 +6,9 @@ printWithDefaultConfig
 where
 
 import TruthTable.Types
-import Control.Monad.State.Lazy
+-- there's no reason to be Lazy when printing (we discard results right
+-- after anyway) and String generates a lot of thunks
+import Control.Monad.State.Strict
 
 data PrintConfig = PrintConfig {
                  delimiter :: String,
@@ -21,7 +23,6 @@ default_config = PrintConfig { delimiter= "\t", trueString = "T", falseString = 
 
 -- | take a row from the TruthTable, return it, and update state to reflect
 -- this
--- XXX: handle if the TruthTable is empty
 takeRow :: Printer (TruthSet, Bool)
 takeRow = do
         (conf, truthTable) <- get
@@ -48,18 +49,25 @@ printBool conf False = falseString conf
 
 printRow :: Printer String
 printRow = do
-        conf <- getConfig
-        (truthSet, result) <- takeRow
+        truthTable <- getTruthTable
+        -- make sure a row exists before we take one
+        if (not . null . truthSets $ truthTable) && (not . null . rs $ truthTable)
+            then printRow'
+            --if there are no rows left to print return an empty string
+            else return ""
+    where printRow' = do
+            conf <- getConfig
+            (truthSet, result) <- takeRow
 
-        let pBool = printBool conf
-            delim = delimiter conf
+            let pBool = printBool conf
+                delim = delimiter conf
 
-        -- TODO: consider printing the first item separately so the line
-        -- doesn't start with a delimiter
-        let rowStr = foldr (\thisTruthValue acc -> acc ++ delim ++ pBool thisTruthValue) "" truthSet
-        
-        -- don't forget to print the result as the last column
-        return $ rowStr ++ delim ++ pBool result
+            -- TODO: consider printing the first item separately so the line
+            -- doesn't start with a delimiter
+            let rowStr = foldr (\thisTruthValue acc -> acc ++ delim ++ pBool thisTruthValue) "" truthSet
+            
+            -- don't forget to print the result as the last column
+            return $ rowStr ++ delim ++ pBool result
 
 
 printHeader :: Printer String
