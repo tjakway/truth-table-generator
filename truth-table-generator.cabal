@@ -23,10 +23,13 @@ Library
 
   hs-source-dirs:      src
   default-language:    Haskell2010
-  ghc-options:         -Wall -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-unused-do-bind -fwarn-incomplete-uni-patterns
+  ghc-options:         -Wall -fwarn-tabs -fwarn-incomplete-record-updates 
+                        -fwarn-unused-do-bind -fwarn-incomplete-uni-patterns
   build-depends:       base, containers, parsec, array, mtl
   
-  exposed-modules: TruthTable.Parser, TruthTable.Mapping, TruthTable.Types, TruthTable.Logic, TruthTable.ErrorChecking,
+  exposed-modules: TruthTable.Parser, TruthTable.Mapping, 
+                    TruthTable.Types, TruthTable.Logic, 
+                    TruthTable.ErrorChecking,
                     TruthTable.Printing
 
   if flag(test)
@@ -45,7 +48,9 @@ Test-Suite test-truth-table-generator
   other-modules: TruthTable.Tests.LogicTests, TruthTable.Tests.ParserTests
   default-language:    Haskell2010
 
-  build-depends:       base, truth-table-generator, containers, parsec, array, HUnit, test-framework, test-framework-hunit
+  build-depends:       base, truth-table-generator, 
+                        containers, parsec, array, 
+                        HUnit, test-framework, test-framework-hunit
 
 executable truth-table-generator
   main-is:             Main.hs

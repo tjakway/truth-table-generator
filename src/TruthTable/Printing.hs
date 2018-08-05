@@ -2,7 +2,8 @@ module TruthTable.Printing
 (PrintConfig(..),
 printM,
 printTruthTable,
-printWithDefaultConfig
+printWithDefaultConfig,
+printResultOrErrorWithDefaultConfig
 )
 where
 
@@ -97,15 +98,18 @@ printRows = do
         printedRow <- printRow
 
         if truthSetsEmpty && (not resultsEmpty) || (not truthSetsEmpty) && resultsEmpty 
-            then return . Left $ "Number of TruthSets does not match number of results! " ++ (show . truthSets $ truthTable) ++
-                (show . rs $ truthTable)
+            then return . Left $ 
+                        "Number of TruthSets does not match number of results! " ++ 
+                        (show . truthSets $ truthTable) ++
+                        (show . rs $ truthTable)
             else if truthSetsEmpty && resultsEmpty 
                      -- if we're out of rows to print we're done
                      then return . Right $ printedRow
                      -- recurse to print the next row
                      -- we have to bind twice: once to unwrap the state
                      -- monad, again to unwrap the Either type
-                     else printRows >>= (\nextRowR -> return $ nextRowR >>= (\nextRow -> Right $ printedRow ++ "\n" ++ nextRow))
+                     else printRows >>= (\nextRowR -> return $ nextRowR >>= 
+                                            (\nextRow -> Right $ printedRow ++ "\n" ++ nextRow))
 
 
 printM :: Printer (Either String String)
@@ -121,3 +125,11 @@ printTruthTable conf truthTable = evalState printM (conf, truthTable)
 
 printWithDefaultConfig :: TruthTable -> Either String String
 printWithDefaultConfig = printTruthTable defaultConfig
+
+printResultOrErrorWithDefaultConfig :: Either [Variable] TruthTable -> String
+printResultOrErrorWithDefaultConfig (Left vars) = "Error: " ++ (show vars)
+printResultOrErrorWithDefaultConfig (Right truthTable) = 
+        case printWithDefaultConfig truthTable of
+                Right result -> result
+                Left err -> "Error: " ++ err
+
