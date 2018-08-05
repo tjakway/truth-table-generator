@@ -6,6 +6,7 @@ import Test.Framework.Providers.HUnit
 
 import TruthTable.Types
 import TruthTable.Logic
+import TruthTable.Mapping
 import TruthTable.Parser (parse)
 import qualified Data.Map.Strict as Map 
 
@@ -44,8 +45,20 @@ fullAndTest = assertEqual "x And y yields all expected values"
           actualTruthTable = genTruthTable stmt
           
 
+twoVariableBinaryToMapTest :: Assertion
+twoVariableBinaryToMapTest = assertEqual "binaryToMap gives expected values for 2 variables"
+                                actualMapping expectedMapping
+    where vars = [Variable "x", Variable "y"]
+          expectedMapping = map Map.fromList 
+                                [ [(Variable "x",True),(Variable "y",True)],
+                                  [(Variable "x",True),(Variable "y",False)],
+                                  [(Variable "x",False),(Variable "y",True)],
+                                  [(Variable "x",False),(Variable "y",False)] ]
+          actualMapping = binaryToMap vars
+
 
 tests = testGroup "LogicTests" [testCase "basicAndTest" basicAndTest,
                                 testCase "basicOrTrueFalseTest" basicOrTrueFalseTest,
                                 testCase "basicOrFalseTrueTest" basicOrFalseTrueTest,
-                                testCase "fullAndTest" fullAndTest]
+                                testCase "fullAndTest" fullAndTest,
+                                testCase "twoVariableBinaryToMapTest" twoVariableBinaryToMapTest]
