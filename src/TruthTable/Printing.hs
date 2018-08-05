@@ -1,6 +1,7 @@
 module TruthTable.Printing
 (PrintConfig(..),
 printM,
+printTruthTable,
 printWithDefaultConfig
 )
 where
@@ -115,5 +116,8 @@ printM = do
         case rowsR of (Left e) -> return . Left $ e
                       (Right printedRows) -> return . Right $ header ++ "\n" ++ printedRows
 
+printTruthTable :: PrintConfig -> TruthTable -> Either String String
+printTruthTable conf truthTable = evalState printM (conf, truthTable)
+
 printWithDefaultConfig :: TruthTable -> Either String String
-printWithDefaultConfig truthTable = evalState printM (defaultConfig, truthTable)
+printWithDefaultConfig = printTruthTable defaultConfig
