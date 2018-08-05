@@ -1,9 +1,9 @@
 module Main where
 
 import TruthTable.Types
-import TruthTable.Mapping
 import TruthTable.Parser
 import TruthTable.Printing
+import TruthTable.Logic
 import System.Environment
 import Data.List
 
