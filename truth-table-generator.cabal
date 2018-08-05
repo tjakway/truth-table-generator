@@ -50,7 +50,7 @@ Test-Suite test-truth-table-generator
 
   build-depends:       base, truth-table-generator, 
                         containers, parsec, array, 
-                        HUnit, test-framework, test-framework-hunit, mtl
+                        HUnit, test-framework, test-framework-hunit 
 
 executable truth-table-generator
   main-is:             Main.hs
