@@ -19,8 +19,8 @@ data PrintConfig = PrintConfig {
 
 type Printer = State (PrintConfig, TruthTable)
 
-default_config :: PrintConfig
-default_config = PrintConfig { delimiter= "\t", trueString = "T", falseString = "F", resultColumnName = "Result" }
+defaultConfig :: PrintConfig
+defaultConfig = PrintConfig { delimiter= "\t", trueString = "T", falseString = "F", resultColumnName = "Result" }
 
 -- | take a row from the TruthTable, return it, and update state to reflect
 -- this
@@ -116,4 +116,4 @@ printM = do
                       (Right printedRows) -> return . Right $ header ++ "\n" ++ printedRows
 
 printWithDefaultConfig :: TruthTable -> Either String String
-printWithDefaultConfig truthTable = evalState printM (default_config, truthTable)
+printWithDefaultConfig truthTable = evalState printM (defaultConfig, truthTable)
