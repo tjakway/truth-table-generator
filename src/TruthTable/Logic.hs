@@ -45,12 +45,14 @@ evaluateOperator Or a b = (a || b)
 evaluateOperator Xor a b = (a || b) && (a /= b)
 
 catEithers :: [Either a b] -> Either [a] [b]
-catEithers = foldr f (Right [])
+catEithers = r . foldr f (Right [])
     where f (Left x) (Left cs) = Left $ x : cs
           f (Left x) (Right _) = Left [x]
           f (Right x) (Right ds) = Right $ x : ds
           f (Right _) cs = cs
 
+          r (Left xs) = Left . reverse $ xs
+          r (Right xs) = Right . reverse $ xs
 
 -- | TODO: should probably change Either [Variable] TruthTable to 
 -- Either [TruthSet] TruthTable so we can see all of the problematic input
