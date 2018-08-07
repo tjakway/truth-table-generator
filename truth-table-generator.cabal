@@ -30,7 +30,8 @@ Library
   exposed-modules: TruthTable.Parser, TruthTable.Mapping, 
                     TruthTable.Types, TruthTable.Logic, 
                     TruthTable.ErrorChecking,
-                    TruthTable.Printing
+                    TruthTable.Printing,
+                    TruthTable.Entry
 
   if flag(test)
     CPP-Options: -DTESTING
