@@ -29,22 +29,27 @@ defaultConfig = PrintConfig { delimiter= "\t", trueString = "T", falseString = "
 takeRow :: Printer (TruthSet, Bool)
 takeRow = do
         (conf, truthTable) <- get
-        let thisTruthSet = head . truthSets $ truthTable
-            thisResult   = head . rs $ truthTable
-            newTruthTable = truthTable { 
-                            truthSets = (init . truthSets $ truthTable),
-                                rs = (init . rs $ truthTable) }
+        let split [] = error "Cannot split an empty list"
+            split (x:xs) = (x, xs)
+
+        (thisTruthSet, remTruthSets) <- split . truthSets <$> getTruthTable
+        (thisResult, remResults) <- split . rs <$> getTruthTable
+
+        let newTruthTable = truthTable { 
+                                truthSets = remTruthSets,
+                                rs = remResults }
+
         put (conf, newTruthTable)
         return (thisTruthSet, thisResult)
 
 getConfig :: Printer PrintConfig
-getConfig = get >>= return . fst
+getConfig = fst <$> get
 
 getTruthTable :: Printer TruthTable
-getTruthTable = get >>= return . snd
+getTruthTable = snd <$> get
 
 getVariables :: Printer [Variable]
-getVariables = get >>= return . variables . snd
+getVariables = variables . snd <$> get
 
 printBool :: PrintConfig -> Bool -> String
 printBool conf True = trueString conf
@@ -92,24 +97,23 @@ printHeader = do
 printRows :: Printer (Either String String)
 printRows = do
         truthTable <- getTruthTable
-        let truthSetsEmpty = null . truthSets $ truthTable
-            resultsEmpty = null . rs $ truthTable
+        let truthSetsLength = length . truthSets $ truthTable
+            resultsLength = length . rs $ truthTable
         
         printedRow <- printRow
 
-        if truthSetsEmpty && (not resultsEmpty) || (not truthSetsEmpty) && resultsEmpty 
+        if truthSetsLength /= resultsLength
             then return . Left $ 
                         "Number of TruthSets does not match number of results! " ++ 
                         (show . truthSets $ truthTable) ++
                         (show . rs $ truthTable)
-            else if truthSetsEmpty && resultsEmpty 
+            else if (truthSetsLength == 0) && (resultsLength == 0)
                      -- if we're out of rows to print we're done
                      then return . Right $ printedRow
                      -- recurse to print the next row
                      -- we have to bind twice: once to unwrap the state
                      -- monad, again to unwrap the Either type
-                     else printRows >>= (\nextRowR -> return $ nextRowR >>= 
-                                            (\nextRow -> Right $ printedRow ++ "\n" ++ nextRow))
+                     else (fmap ((printedRow ++ "\n") ++)) <$> printRows
 
 
 printM :: Printer (Either String String)
